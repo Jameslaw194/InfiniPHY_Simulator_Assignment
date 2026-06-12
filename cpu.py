@@ -29,3 +29,56 @@ class CPU:
         
         # Update the zero flag based on the result in rd
         self._update_zero_flag(rd)
+        
+# --- MEMORY INSTRUCTIONS ---
+    
+    def exec_ld(self, rd, rs, off16=0):
+        # Execute the 'ld' instruction, which loads a word from memory into register rd. The memory address is calculated as the value in register rs plus an optional offset off16.
+        base_addr = self.registers.get(rs)
+        offset = self._sign_extend_16(off16)
+        target_addr = base_addr + offset
+        
+        # Read from memory and store in rd
+        value = self.memory.read_word(target_addr)
+        self.registers.set(rd, value)
+        self._update_zero_flag(rd) # Sets cr.z if rd becomes 0, otherwise clears it
+
+    def exec_st(self, rd, rs, off16=0):
+        # Execute the 'st' instruction, which stores a word from register rs into memory. The memory address is calculated as the value in register rd plus an optional offset off16.
+        base_addr = self.registers.get(rd)
+        offset = self._sign_extend_16(off16)
+        target_addr = base_addr + offset
+        
+        # Get the value to store from rs
+        value = self.registers.get(rs)
+        self.memory.write_word(target_addr, value)
+
+
+    # --- BRANCHING INSTRUCTIONS ---
+
+    def exec_j(self, ra, imm16):
+        # Execute the 'j' instruction, which performs an unconditional jump to the address calculated as the value in register ra plus an immediate offset imm16.
+        base = self.registers.get(ra)
+        offset = self._sign_extend_16(imm16)
+        self.registers.pc = base + offset
+
+    def exec_jz(self, ra, imm16):
+        # Execute the 'jz' instruction, which performs a conditional jump to the address calculated as the value in register ra plus an immediate offset imm16 if the zero flag (cr.z) is set.
+        if self.registers.cr_z:
+            base = self.registers.get(ra)
+            offset = self._sign_extend_16(imm16)
+            self.registers.pc = base + offset
+
+    def exec_jnz(self, ra, imm16):
+        # Execute the 'jnz' instruction, which performs a conditional jump to the address calculated as the value in register ra plus an immediate offset imm16 if the zero flag (cr.z) is not set.
+        if not self.registers.cr_z:
+            base = self.registers.get(ra)
+            offset = self._sign_extend_16(imm16)
+            self.registers.pc = base + offset
+
+    # --- BITWISE & LOGICAL INSTRUCTIONS ---
+    # def exec_sll()
+    # def exec_slr()
+    # def exec_neg()
+    # def exec_and()
+    # def exec_or()
