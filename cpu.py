@@ -138,6 +138,20 @@ class CPU:
             
         self.registers.set(rd, result)
         self._update_zero_flag(rd)
+        
+    def exec_adh(self, rd, rs):
+        #Add half words, rd = rd + rs[31:16] + rs[15:0]
+        val_rd = self.registers.get(rd)
+        val_rs = self.registers.get(rs)
+        
+        # Isolate the upper and lower 16-bit half-words
+        upper_half = (val_rs >> 16) & 0xFFFF
+        lower_half = val_rs & 0xFFFF
+        
+        # Sum them into the destination register
+        result = val_rd + upper_half + lower_half
+        self.registers.set(rd, result)
+        self._update_zero_flag(rd)
 
     # --- BITWISE HELPER ---
 
