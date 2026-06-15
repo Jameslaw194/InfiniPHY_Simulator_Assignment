@@ -6,6 +6,9 @@ class CPU:
     def _sign_extend_16(self, value):
         # Sign-extend a 16-bit immediate value to 32 bits.
         # If the 16th bit (sign bit) is 1, the number is negative.
+        if value < 0:
+            return value
+            
         if value & 0x8000:
             return value - 0x10000
         return value
