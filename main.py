@@ -28,12 +28,12 @@ class Simulator:
     def run(self):
         # Main execution loop
         
-        # Initialize memory with a IPv4 header
+        # Initialise memory with a IPv4 header
         header = [0x4500003C, 0x1C464000, 0x40060000, 0xAC100A63, 0x08080808]
         for i, word in enumerate(header):
             self.memory.write_word(i * 4, word)
         
-        # Initialize Program Counter to 0
+        # Initialise Program Counter to 0
         self.registers.pc = 0
         
         while True:
